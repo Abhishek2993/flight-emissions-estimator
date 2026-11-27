@@ -81,8 +81,10 @@ class PipelineConfig:
     level_vr_threshold_fpm: float = 300.0
     """|vertical rate| below this counts as level flight in level-off detection."""
 
-    min_level_off_s: float = 60.0
-    """A level segment inside the descent must last this long to count as a level-off."""
+    min_level_off_s: float = 20.0
+    """A level segment inside the descent must last at least this long. Together with the
+    300 ft/min threshold this is the harmonised EUROCONTROL/FAA definition of level flight
+    used in vertical flight efficiency (CDO/CCO) analyses."""
 
     descent_floor_above_landing_ft: float = 3_000.0
     """The descent analysis stops this far above the landing altitude: the final-approach
