@@ -35,6 +35,9 @@ dev = [
     "pytest-cov==7.1.0",
     "ruff==0.17.6",
 ]
+docs = [
+    "playwright==1.65.2",  # only for scripts/capture_dashboard.py
+]
 
 [project.scripts]
 flight-emissions = "flight_emissions.cli:main"
