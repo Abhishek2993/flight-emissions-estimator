@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flight-emissions-estimator"
+version = "0.1.0"
+description = "Estimate fuel burn and emissions per flight phase from ADS-B trajectories and quantify route and descent inefficiency."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Abhishek Maurya" }]
+requires-python = ">=3.11,<3.14"
+keywords = ["aviation", "ADS-B", "emissions", "OpenAP", "fuel burn", "CO2"]
+classifiers = [
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+# Direct dependencies are pinned for reproducible numbers.
+# pandas is held below 3.0 because traffic 2.13 imports pandas internals removed in 3.0.
+dependencies = [
+    "traffic==2.13",
+    "openap==2.6.2",
+    "pandas==2.3.3",
+    "numpy==2.4.6",
+    "pyarrow==26.0.1",
+    "matplotlib==3.11.2",
+    "streamlit==1.67.0",
+    "plotly==7.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "pytest-cov==7.1.0",
+    "ruff==0.17.6",
+]
+
+[project.scripts]
+flight-emissions = "flight_emissions.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Abhishek2993/flight-emissions-estimator"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "app", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "N", "SIM", "NPY", "D"]
+ignore = [
+    "D105",  # magic-method docstrings
+    "D107",  # __init__ docstrings (documented on the class)
+    "D203",  # conflicts with D211
+    "D213",  # conflicts with D212
+    "N803",  # argument names such as H0 mirror the formulas in the docs
+    "N806",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["D"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
+
+[tool.coverage.run]
+source = ["flight_emissions"]
+omit = ["*/__main__.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
