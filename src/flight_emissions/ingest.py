@@ -206,6 +206,8 @@ def split_flights(df: pd.DataFrame) -> list[pd.DataFrame]:
 def load_flights(path: str | Path) -> list[pd.DataFrame]:
     """Load every flight under ``path`` (a file or a directory of parquet/CSV files).
 
+    Files whose name starts with an underscore are treated as metadata and skipped.
+
     Args:
         path: File or directory.
 
@@ -214,7 +216,11 @@ def load_flights(path: str | Path) -> list[pd.DataFrame]:
     """
     path = Path(path)
     if path.is_dir():
-        files = sorted([*path.glob("*.parquet"), *path.glob("*.csv")])
+        files = sorted(
+            f
+            for f in [*path.glob("*.parquet"), *path.glob("*.csv")]
+            if not f.name.startswith("_")  # "_catalogue.csv" and similar are metadata
+        )
         if not files:
             raise IngestError(f"no .parquet or .csv files found in {path}")
     elif path.exists():
