@@ -1,0 +1,6 @@
+flight_id,callsign,icao24,registration,typecode,origin,destination,date_utc,n_points,source,description
+AFR34ZG_20240706,AFR34ZG,393322,F-GMZC,A321,LFPG,LFBO,2024-07-06,4625,samples:full_flight_short,"Air France Paris CDG - Toulouse, raw Mode S decoded with rs1090 (2024)"
+THY9BP_20240917,THY9BP,4baac6,TC-JVF,B738,LTFM,ENGM,2024-09-17,1121,fr24:372355e5,Turkish Airlines Istanbul - Oslo (FlightRadar24 export)
+EDW24_20240406,EDW24,4b1901,HB-JMF,A343,LSZH,MMUN,2024-04-06,2327,fr24:34a8254b,"Edelweiss Zurich - Cancun, transatlantic (FlightRadar24 export)"
+ELY1747_20191103,ELY1747,738043,4X-ELC,B744,LIRF,LLBG,2019-11-03,2110,samples:elal747,"El Al Rome - Tel Aviv, B747 farewell flight that drew a 747 over Israel"
+TRA051_20180530,TRA051,484506,PH-HZO,B738,EHAM,EHAM,2018-05-30,16005,samples:belevingsvlucht,Transavia sightseeing round trip from Amsterdam (circular reference case)
