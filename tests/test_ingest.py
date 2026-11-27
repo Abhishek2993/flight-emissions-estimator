@@ -88,3 +88,21 @@ def test_opensky_credentials_from_environment(monkeypatch):
     monkeypatch.setenv("OPENSKY_USERNAME", "user")
     monkeypatch.setenv("OPENSKY_PASSWORD", "secret")
     assert opensky_credentials_available()
+
+
+def test_merge_messages_per_second():
+    from flight_emissions.sample_data import merge_messages_per_second
+
+    raw = pd.DataFrame(
+        {
+            "timestamp": pd.to_datetime(
+                ["2024-01-01 00:00:00.1", "2024-01-01 00:00:00.6", "2024-01-01 00:00:01.2"],
+                utc=True,
+            ),
+            "latitude": [1.0, None, 1.1],
+            "groundspeed": [None, 300.0, 301.0],
+        }
+    )
+    out = merge_messages_per_second(raw)
+    assert len(out) == 2
+    assert out.loc[0, "latitude"] == 1.0 and out.loc[0, "groundspeed"] == 300.0
