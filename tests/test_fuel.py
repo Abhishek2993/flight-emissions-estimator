@@ -154,6 +154,16 @@ def test_thrust_mode_identifies_takeoff_roll():
     }
 
 
+def test_thrust_mode_identifies_landing_roll():
+    phase = np.array(["descent"] * 6 + ["ground"] * 3, dtype=object)
+    gs = np.array([150, 140, 135, 120, 90, 60, 40, 20, 10], dtype=float)
+    alt = np.array([900, 500, 150, 0, 0, 0, 0, 0, 0], dtype=float)
+    mode = thrust_mode(phase, gs, 50.0, altitude_ft=alt)
+    assert mode.tolist() == ["airborne"] * 3 + ["landing"] * 3 + ["taxi"] * 3
+    # A recording that ends airborne has no landing roll.
+    assert "landing" not in thrust_mode(phase[:6], gs[:6], 50.0, altitude_ft=alt[:6]).tolist()
+
+
 def test_true_airspeed_prefers_tas_column():
     df = pd.DataFrame({"groundspeed_kt": [400.0, 410.0], "tas_kt": [450.0, np.nan]})
     assert true_airspeed_kt(df).tolist() == [450.0, 410.0]
