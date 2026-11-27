@@ -45,6 +45,9 @@ Repository = "https://github.com/Abhishek2993/flight-emissions-estimator"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+flight_emissions = ["resources/*.geojson"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
