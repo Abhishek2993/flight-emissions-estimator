@@ -69,9 +69,6 @@ class PipelineConfig:
     update_mass: bool = True
     """Reduce aircraft mass by the fuel already burned (two-pass fixed-point estimate)."""
 
-    taxi_thrust_fraction: float = 0.07
-    """Thrust setting while taxiing. 7 % is the ICAO LTO-cycle idle/taxi setting."""
-
     fallback_typecode: str | None = None
     """Type used when a flight has no (or an unsupported) type code. ``None`` = skip the
     flight instead of guessing."""
