@@ -165,7 +165,7 @@ def detect_level_offs(
     altitude_ft: NDArray[np.float64],
     vertical_rate_fpm: NDArray[np.float64],
     threshold_fpm: float = 300.0,
-    min_duration_s: float = 60.0,
+    min_duration_s: float = 20.0,
 ) -> list[LevelOff]:
     """Find level segments: runs with ``|vertical rate| < threshold`` lasting long enough.
 
