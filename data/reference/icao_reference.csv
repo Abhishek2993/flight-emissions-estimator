@@ -1,0 +1,5 @@
+origin,destination,typecode,icao_co2_kg_per_pax,icao_co2_kg_per_flight,note
+LFPG,LFBO,A321,,,"Enter from the ICAO Carbon Emissions Calculator (economy, one way). Per-flight = fuel burn/journey x 3.16."
+LTFM,ENGM,B738,,,"Enter from the ICAO Carbon Emissions Calculator (economy, one way). Per-flight = fuel burn/journey x 3.16."
+LSZH,MMUN,A343,,,"Enter from the ICAO Carbon Emissions Calculator (economy, one way). Per-flight = fuel burn/journey x 3.16."
+LIRF,LLBG,B744,,,"Enter from the ICAO Carbon Emissions Calculator (economy, one way). Per-flight = fuel burn/journey x 3.16."
