@@ -54,6 +54,11 @@ class PipelineConfig:
     """Below this ground speed an aircraft is on the ground, whatever its altitude reads.
     Used to fix OpenAP's sea-level ground rule at elevated airports."""
 
+    cruise_band_ft: float = 4_000.0
+    """Level flight within this distance of the flight's highest altitude (and above
+    10,000 ft) is cruise. OpenAP's cruise rule keys on high *speed*, so a cruise flown into
+    a strong headwind (low ground speed) would otherwise be labelled "level"."""
+
     min_segment_s: float = 120.0
     """Phase segments shorter than this are merged into a neighbour."""
 
