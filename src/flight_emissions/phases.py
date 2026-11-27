@@ -193,6 +193,7 @@ def label_phases(df: pd.DataFrame, config: PipelineConfig | None = None) -> pd.S
     labels[slow] = GROUND
     labels = apply_cruise_band(labels, df["altitude_ft"].to_numpy(dtype=float), config)
     labels = merge_short_segments(t_s, labels, config.min_segment_s)
+    labels[slow] = GROUND  # merging must not turn a taxiing aircraft into a flying one
     return pd.Series(labels, index=df.index, name="phase")
 
 

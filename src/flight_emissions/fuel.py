@@ -249,12 +249,15 @@ def _fuel_flow_at_mass(
     ff = np.full(tas_kt.size, model.idle_fuel_flow_kgs)
     air = mode == "airborne"
     if air.any():
-        ff[air] = ff_model.enroute(
-            mass=mass_kg[air],
-            tas=np.maximum(tas_kt[air], 1.0),
-            alt=np.maximum(altitude_ft[air], 0.0),
-            vs=vertical_rate_fpm[air],
-        )
+        # On the landing roll (airborne label, ~zero altitude, low speed) the clean-config
+        # drag model is undefined and returns NaN; those samples fall back to idle below.
+        with np.errstate(over="ignore", invalid="ignore"):
+            ff[air] = ff_model.enroute(
+                mass=mass_kg[air],
+                tas=np.maximum(tas_kt[air], 1.0),
+                alt=np.maximum(altitude_ft[air], 0.0),
+                vs=vertical_rate_fpm[air],
+            )
     roll = mode == "takeoff"
     if roll.any():
         ff[roll] = ff_model.takeoff(tas=tas_kt[roll], alt=np.maximum(altitude_ft[roll], 0.0))
