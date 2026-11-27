@@ -10,6 +10,7 @@ For every sample the fuel flow (kg/s, all engines) is chosen by what the aircraf
   emissions databank. Thrust is limited to the idle..max range.
 * **Take-off roll** - :meth:`openap.FuelFlow.takeoff`: maximum take-off thrust for ground
   samples faster than the ground-speed threshold before the first airborne sample.
+* **Landing roll** - idle (ICAO LTO convention; reverse thrust is not modelled).
 * **Taxi** - the ICAO engine-databank idle fuel flow (the 7 % thrust "taxi/idle" mode of
   the ICAO landing-and-take-off cycle) times the number of engines. OpenAP's drag model is
   meaningless at taxi speed, and ICAO idle is the inventory-standard taxi value.
@@ -225,8 +226,26 @@ def integrate_by_phase(
 # ---------------------------------------------------------------------------------------
 # Fuel flow
 # ---------------------------------------------------------------------------------------
-def thrust_mode(phase: NDArray, groundspeed_kt: NDArray, threshold_kt: float) -> NDArray:
-    """Classify samples as ``taxi``, ``takeoff`` (roll before lift-off) or ``airborne``."""
+LANDING_ROLL_MARGIN_FT = 100.0
+"""Samples within this height of the landing altitude after touchdown are the landing roll."""
+
+
+def thrust_mode(
+    phase: NDArray,
+    groundspeed_kt: NDArray,
+    threshold_kt: float,
+    altitude_ft: NDArray | None = None,
+) -> NDArray:
+    """Classify samples as ``taxi``, ``takeoff``, ``landing`` or ``airborne``.
+
+    * ``takeoff`` - ground samples faster than ``threshold_kt`` before the first airborne
+      sample (the take-off roll): take-off thrust.
+    * ``landing`` - non-ground samples after the last sample more than
+      :data:`LANDING_ROLL_MARGIN_FT` above the landing altitude, when the flight ends on
+      the ground (the landing roll, still too fast for the ground-speed rule): idle, as in
+      the ICAO LTO cycle. The clean-configuration drag model is not valid on the runway.
+    * ``taxi`` - other ground samples: ICAO idle.
+    """
     phase = np.asarray(phase, dtype=object)
     on_ground = phase == GROUND
     mode = np.where(on_ground, "taxi", "airborne").astype(object)
@@ -234,6 +253,13 @@ def thrust_mode(phase: NDArray, groundspeed_kt: NDArray, threshold_kt: float) ->
     if airborne_idx.size:
         before_liftoff = np.arange(phase.size) < airborne_idx[0]
         mode[on_ground & before_liftoff & (np.asarray(groundspeed_kt) >= threshold_kt)] = "takeoff"
+    if altitude_ft is not None and airborne_idx.size and on_ground[-1]:
+        alt = np.asarray(altitude_ft, dtype=float)
+        landing_alt = alt[-1]
+        high = np.flatnonzero(alt > landing_alt + LANDING_ROLL_MARGIN_FT)
+        if high.size:
+            after = np.arange(phase.size) > high[-1]
+            mode[after & ~on_ground] = "landing"
     return mode
 
 
@@ -288,7 +314,10 @@ def estimate_fuel_flow(
     alt = df["altitude_ft"].to_numpy(dtype=float)
     vr = smoothed_vertical_rate(df)
     mode = thrust_mode(
-        df["phase"].to_numpy(), df["groundspeed_kt"].to_numpy(), config.ground_speed_threshold_kt
+        df["phase"].to_numpy(),
+        df["groundspeed_kt"].to_numpy(),
+        config.ground_speed_threshold_kt,
+        altitude_ft=alt,
     )
     m0 = initial_mass_kg if initial_mass_kg is not None else config.mass_fraction * model.mtow_kg
     mass = np.full(t_s.size, m0)
